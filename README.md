@@ -1,5 +1,11 @@
 # GoMobile AI Tire Check Assistant
 
+## Frontend Interface
+
+![GoMobile Triage Portal Application Interface](screenshot_gomobile.png)
+
+The portal features a clean dashboard grid system optimized for dispatch triage. It handles asynchronous requests, exhibits real-time CSS transition loader states, and renders isolated AI advice blocks dynamically.
+
 ## Overview
 
 GoMobile AI Tire Check Assistant is a full-stack web application that helps users receive quick safety recommendations for tire-related issues using Google's Gemini AI.
@@ -25,19 +31,23 @@ This project demonstrates full-stack development concepts including REST API dev
 ## Tech Stack
 
 ### Frontend
+
 - HTML5
 - JavaScript
 - Fetch API
 
 ### Backend
+
 - Node.js
 - Express.js
 
 ### AI Integration
+
 - Google Gemini API
 - @google/genai SDK
 
 ### Additional Packages
+
 - dotenv
 - cors
 
@@ -83,18 +93,15 @@ My tire pressure warning light came on while driving.
 When the user clicks the button, JavaScript sends a POST request to the backend.
 
 ```javascript
-const response = await fetch(
-  "http://localhost:3000/api/tire-check",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      issueDescription: text
-    })
-  }
-);
+const response = await fetch("http://localhost:3000/api/tire-check", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    issueDescription: text,
+  }),
+});
 ```
 
 ### 3. Backend Receives Request
@@ -118,7 +125,7 @@ The server checks whether the user provided an issue description.
 ```javascript
 if (!issueDescription) {
   return res.status(400).json({
-    error: "Please describe the tire issue."
+    error: "Please describe the tire issue.",
   });
 }
 ```
@@ -129,7 +136,7 @@ The backend securely initializes the Google GenAI SDK using an environment varia
 
 ```javascript
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY
+  apiKey: process.env.GEMINI_API_KEY,
 });
 ```
 
@@ -137,11 +144,11 @@ The application sends the issue description to Gemini AI.
 
 ```javascript
 const response = await ai.models.generateContent({
-  model: 'gemini-2.5-flash',
+  model: "gemini-2.5-flash",
   contents: `You are a GoMobile expert mechanic.
   A customer reports: "${issueDescription}".
   Provide 2 quick safety steps and the specific tools needed.
-  Keep it short.`
+  Keep it short.`,
 });
 ```
 
@@ -151,7 +158,7 @@ The AI-generated advice is returned to the frontend.
 
 ```javascript
 return res.status(200).json({
-  advice: response.text
+  advice: response.text,
 });
 ```
 
@@ -160,8 +167,7 @@ return res.status(200).json({
 The response is displayed to the user.
 
 ```javascript
-document.getElementById("reply").innerText =
-  result.advice;
+document.getElementById("reply").innerText = result.advice;
 ```
 
 ---
