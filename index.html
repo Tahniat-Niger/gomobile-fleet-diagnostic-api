@@ -1,28 +1,91 @@
 <!doctype html>
-<html>
-  <body style="font-family: sans-serif; padding: 30px; max-width: 400px">
-    <h3>GoMobile AI Test Assistant</h3>
-    <textarea
-      id="msg"
-      style="width: 100%; height: 80px"
-      placeholder="Type tire issue here..."></textarea
-    ><br /><br />
-    <button onclick="talkToServer()">Send to My Server</button>
-    <p id="reply" style="font-weight: bold; margin-top: 20px; color: blue"></p>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoMobile AI Fleet Triage Portal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <span class="badge">Fleet Dispatch Triage Portal</span>
+        <h2>GoMobile AI Dispatch Guide</h2>
+        <p class="subtitle">
+          Input field symptoms below to automatically generate critical safety
+          steps and custom tool manifests for roadside operators.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="issue">Describe Vehicle/Tire Damage Symptoms</label>
+        <textarea
+          id="issue"
+          placeholder="e.g., Ford Transit delivery van reporting severe pressure loss in rear-right tire after hitting road debris..."></textarea>
+      </div>
+
+      <button id="submitBtn" onclick="sendToBackend()">
+        <span class="spinner" id="btnSpinner"></span>
+        <span id="btnText">Generate Field Action Plan</span>
+      </button>
+
+      <div class="status-msg" id="statusMessage">
+        Orchestrating foundational LLM prompt...
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <div class="result-header">⚙️ Real-time Diagnostic Guide Matrix:</div>
+        <p id="output"></p>
+      </div>
+    </div>
 
     <script>
-      async function talkToServer() {
-        document.getElementById("reply").innerText = "Server is processing...";
-        const text = document.getElementById("msg").value;
+      async function sendToBackend() {
+        const issueText = document.getElementById("issue").value;
+        const resultBox = document.getElementById("resultBox");
+        const output = document.getElementById("output");
+        const btnSpinner = document.getElementById("btnSpinner");
+        const btnText = document.getElementById("btnText");
+        const statusMessage = document.getElementById("statusMessage");
+        const submitBtn = document.getElementById("submitBtn");
 
-        const response = await fetch("http://localhost:3000/api/tire-check", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ issueDescription: text }),
-        });
+        if (!issueText.trim()) {
+          alert("Please enter a diagnostic input description.");
+          return;
+        }
 
-        const result = await response.json();
-        document.getElementById("reply").innerText = result.advice;
+        submitBtn.disabled = true;
+        btnSpinner.style.display = "block";
+        btnText.innerText = "Analyzing Content...";
+        statusMessage.style.display = "block";
+        resultBox.style.display = "none";
+
+        try {
+          const response = await fetch("http://localhost:3000/api/tire-check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ issueDescription: issueText }),
+          });
+
+          const data = await response.json();
+
+          resultBox.style.display = "block";
+          if (data.advice) {
+            output.innerText = data.advice;
+          } else {
+            output.innerText = "Execution Dropped: " + data.error;
+          }
+        } catch (error) {
+          resultBox.style.display = "block";
+          output.innerText =
+            "Connection Aborted: Unable to reach local server runtime.";
+          console.error(error);
+        } finally {
+          submitBtn.disabled = false;
+          btnSpinner.style.display = "none";
+          btnText.innerText = "Generate Field Action Plan";
+          statusMessage.style.display = "none";
+        }
       }
     </script>
   </body>
