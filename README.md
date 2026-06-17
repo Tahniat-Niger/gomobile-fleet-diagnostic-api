@@ -2,7 +2,7 @@
 
 ## Frontend Interface
 
-![GoMobile Triage Portal Application Interface](screenshot_gomobile.png)
+![GoMobile Triage Portal Application Interface](Screenshot_gomobile.png)
 
 The portal features a clean dashboard grid system optimized for dispatch triage. It handles asynchronous requests, exhibits real-time CSS transition loader states, and renders isolated AI advice blocks dynamically.
 
