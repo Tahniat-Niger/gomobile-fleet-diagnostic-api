@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <body style="font-family: sans-serif; padding: 30px; max-width: 400px">
+    <h3>GoMobile AI Test Assistant</h3>
+    <textarea
+      id="msg"
+      style="width: 100%; height: 80px"
+      placeholder="Type tire issue here..."></textarea
+    ><br /><br />
+    <button onclick="talkToServer()">Send to My Server</button>
+    <p id="reply" style="font-weight: bold; margin-top: 20px; color: blue"></p>
+
+    <script>
+      async function talkToServer() {
+        document.getElementById("reply").innerText = "Server is processing...";
+        const text = document.getElementById("msg").value;
+
+        const response = await fetch("http://localhost:3000/api/tire-check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ issueDescription: text }),
+        });
+
+        const result = await response.json();
+        document.getElementById("reply").innerText = result.advice;
+      }
+    </script>
+  </body>
+</html>
